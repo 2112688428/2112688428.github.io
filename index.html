@@ -1,56 +1,442 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <title>给廖芳琴的表白</title>
-  <style>
-    body {
-      background-color: black;
-      color: white;
-      font-family: 'Arial', sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-      height: 100vh;
-      overflow: hidden;
-    }
-    h1 {
-      font-size: 3em;
-      color: #ff3366;
-      animation: pulse 1.2s infinite;
-    }
-    p {
-      font-size: 1.5em;
-      margin-top: 20px;
-    }
-    .heart {
-      color: red;
-      font-size: 5em;
-      animation: beat 1s infinite;
-    }
-    @keyframes beat {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.3); }
-    }
-    @keyframes pulse {
-      0% { opacity: 0.8; }
-      50% { opacity: 1; }
-      100% { opacity: 0.8; }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我有话想对你说</title>
+    <!-- 引入Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    
+    <!-- 配置Tailwind自定义颜色和字体 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        love: {
+                            50: '#fff1f2',
+                            100: '#ffe4e6',
+                            200: '#fecdd3',
+                            300: '#fda4af',
+                            400: '#fb7185',
+                            500: '#f43f5e',
+                            600: '#e11d48',
+                            700: '#be123c',
+                            800: '#9f1239',
+                            900: '#881337',
+                        }
+                    },
+                    fontFamily: {
+                        romantic: ['"Dancing Script"', 'cursive', 'sans-serif'],
+                        main: ['"Montserrat"', 'sans-serif']
+                    },
+                }
+            }
+        }
+    </script>
+    
+    <!-- 引入Google字体 -->
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- 自定义工具类 -->
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .text-shadow {
+                text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+            .text-shadow-lg {
+                text-shadow: 0 4px 8px rgba(0,0,0,0.12), 0 2px 4px rgba(0,0,0,0.08);
+            }
+            .animate-float {
+                animation: float 6s ease-in-out infinite;
+            }
+            .animate-pulse-slow {
+                animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+            }
+            .bg-gradient-love {
+                background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 99%, #fad0c4 100%);
+            }
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+    </style>
+    
+    <style>
+        /* 基础样式 */
+        body {
+            overflow-x: hidden;
+            touch-action: manipulation;
+        }
+        
+        /* 心形动画 */
+        .heart {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: #f43f5e;
+            transform: rotate(45deg);
+            animation: heartMove 6s ease-in-out forwards;
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .heart:before,
+        .heart:after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: #f43f5e;
+            border-radius: 50%;
+        }
+        
+        .heart:before {
+            top: -10px;
+            left: 0;
+        }
+        
+        .heart:after {
+            top: 0;
+            left: -10px;
+        }
+        
+        @keyframes heartMove {
+            0% {
+                transform: rotate(45deg) translateY(0) scale(0.3);
+                opacity: 1;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                transform: rotate(45deg) translateY(-100vh) scale(1);
+                opacity: 0;
+            }
+        }
+        
+        /* 粒子背景 */
+        #particles-js {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 0;
+        }
+        
+        /* 烟花效果 */
+        .firework {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            transform-origin: center;
+            animation: explode 1s ease-out forwards;
+            opacity: 0;
+        }
+        
+        @keyframes explode {
+            0% {
+                transform: scale(0);
+                opacity: 1;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                transform: scale(15);
+                opacity: 0;
+            }
+        }
+        
+        /* 页面过渡动画 */
+        .fade-in {
+            animation: fadeIn 1.5s ease forwards;
+            opacity: 0;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* 延迟动画 */
+        .delay-100 { animation-delay: 0.1s; }
+        .delay-300 { animation-delay: 0.3s; }
+        .delay-500 { animation-delay: 0.5s; }
+        .delay-700 { animation-delay: 0.7s; }
+        .delay-1000 { animation-delay: 1s; }
+        .delay-1500 { animation-delay: 1.5s; }
+        .delay-2000 { animation-delay: 2s; }
+    </style>
 </head>
-<body>
-  <h1>廖芳琴 ❤️</h1>
-  <div class="heart">💓</div>
-  <p>你就是我代码里的唯一常量，</p>
-  <p>不论重启多少次，心跳永远为你运行。</p>
-  <script>
-    setTimeout(() => {
-      alert("廖芳琴，我喜欢你。");
-      alert("从写下 Hello World 的那一刻起，我就想把世界介绍给你。");
-      alert("愿意让我进入你的主函数（main）吗？ ❤️");
-    }, 1000);
-  </script>
+<body class="bg-gradient-love min-h-screen font-main text-gray-800 relative">
+    <!-- 粒子背景容器 -->
+    <div id="particles-js"></div>
+    
+    <!-- 主要内容 -->
+    <div class="container mx-auto px-4 py-12 relative z-10">
+        <!-- 标题部分 -->
+        <div class="text-center mb-16 fade-in">
+            <h1 class="font-romantic text-[clamp(2.5rem,8vw,5rem)] font-bold text-love-800 text-shadow-lg mb-4">
+                我有话想对你说
+            </h1>
+            <div class="w-32 h-1 bg-love-500 mx-auto rounded-full"></div>
+        </div>
+        
+        <!-- 表白卡片 -->
+        <div class="max-w-2xl mx-auto bg-white/80 backdrop-blur-md rounded-3xl shadow-2xl p-8 md:p-12 transform transition-all duration-500 hover:shadow-love-300/30 hover:scale-[1.01] fade-in delay-300">
+            <div class="text-center mb-10">
+                <i class="fa fa-heart text-love-500 text-4xl md:text-5xl animate-pulse-slow"></i>
+            </div>
+            
+            <div class="space-y-6 text-lg md:text-xl text-gray-700 leading-relaxed">
+                <p class="fade-in delay-500">当我第一次见到你，我就知道，你是特别的。</p>
+                
+                <p class="fade-in delay-700">你的笑容像阳光一样温暖，你的声音像音乐一样动听，你的出现让我的世界变得更加色彩斑斓。</p>
+                
+                <p class="fade-in delay-1000">和你在一起的每一刻，都让我感到无比幸福。我喜欢看你笑，喜欢听你说话，喜欢和你分享生活中的点点滴滴。</p>
+                
+                <p class="font-romantic text-2xl md:text-3xl text-love-700 text-center my-8 fade-in delay-1500">
+                    我想，我已经深深地爱上你了。
+                </p>
+                
+                <p class="fade-in delay-2000">你愿意...做我的恋人吗？</p>
+            </div>
+            
+            <!-- 互动按钮 -->
+            <div class="flex flex-col sm:flex-row justify-center gap-6 mt-12">
+                <button id="acceptBtn" class="px-8 py-4 bg-love-500 hover:bg-love-600 text-white rounded-full text-lg font-semibold shadow-lg hover:shadow-xl transform transition-all duration-300 hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-love-300 active:scale-95 fade-in delay-1500">
+                    <i class="fa fa-heart mr-2"></i>我愿意
+                </button>
+                
+                <button id="rejectBtn" class="px-8 py-4 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-full text-lg font-semibold shadow-md hover:shadow-lg transform transition-all duration-300 hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-gray-300 active:scale-95 fade-in delay-1500">
+                    <i class="fa fa-times mr-2"></i>再考虑
+                </button>
+            </div>
+        </div>
+        
+        <!-- 底部装饰 -->
+        <div class="text-center mt-16 text-gray-600 fade-in delay-300">
+            <p>用我全部的心意 ❤️ 制作</p>
+        </div>
+    </div>
+    
+    <!-- 成功表白弹窗 -->
+    <div id="successModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-500">
+        <div class="bg-white rounded-3xl p-8 max-w-md w-full text-center transform scale-90 transition-transform duration-500">
+            <div class="text-love-500 text-6xl mb-6">
+                <i class="fa fa-heart"></i>
+            </div>
+            <h2 class="font-romantic text-3xl md:text-4xl text-love-800 mb-4">太棒了！</h2>
+            <p class="text-gray-700 text-lg mb-8">我会用一生的时间来珍惜你，爱你！</p>
+            <button id="closeModal" class="px-6 py-3 bg-love-500 hover:bg-love-600 text-white rounded-full text-lg font-semibold shadow-lg transition-all duration-300 hover:-translate-y-1 active:scale-95">
+                <i class="fa fa-smile-o mr-2"></i>爱你哟
+            </button>
+        </div>
+    </div>
+    
+    <!-- 引入粒子效果库 -->
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    
+    <script>
+        // 初始化粒子背景
+        particlesJS("particles-js", {
+            particles: {
+                number: { value: 80, density: { enable: true, value_area: 800 } },
+                color: { value: "#f43f5e" },
+                shape: { type: "circle" },
+                opacity: { 
+                    value: 0.5, 
+                    random: true,
+                    anim: { enable: true, speed: 1, opacity_min: 0.1, sync: false }
+                },
+                size: { 
+                    value: 3, 
+                    random: true,
+                    anim: { enable: true, speed: 2, size_min: 0.1, sync: false }
+                },
+                line_linked: {
+                    enable: true,
+                    distance: 150,
+                    color: "#f43f5e",
+                    opacity: 0.2,
+                    width: 1
+                },
+                move: {
+                    enable: true,
+                    speed: 1,
+                    direction: "none",
+                    random: true,
+                    straight: false,
+                    out_mode: "out",
+                    bounce: false
+                }
+            },
+            interactivity: {
+                detect_on: "canvas",
+                events: {
+                    onhover: { enable: true, mode: "grab" },
+                    onclick: { enable: true, mode: "push" },
+                    resize: true
+                },
+                modes: {
+                    grab: { distance: 140, line_linked: { opacity: 0.5 } },
+                    push: { particles_nb: 4 }
+                }
+            },
+            retina_detect: true
+        });
+        
+        // 创建随机心形
+        function createHearts() {
+            if (document.visibilityState !== 'visible') return;
+            
+            const heart = document.createElement('div');
+            heart.classList.add('heart');
+            
+            // 随机位置和动画
+            const startPosX = Math.random() * window.innerWidth;
+            const size = Math.random() * 15 + 10;
+            const duration = Math.random() * 8 + 6;
+            const delay = Math.random() * 5;
+            const hue = Math.random() * 30 + 340; // 粉红色调范围
+            
+            heart.style.left = `${startPosX}px`;
+            heart.style.bottom = `-${size}px`;
+            heart.style.width = `${size}px`;
+            heart.style.height = `${size}px`;
+            heart.style.animationDuration = `${duration}s`;
+            heart.style.animationDelay = `${delay}s`;
+            heart.style.backgroundColor = `hsl(${hue}, 90%, 60%)`;
+            
+            // 设置伪元素颜色
+            const style = document.createElement('style');
+            style.textContent = `
+                .heart-${Date.now()}::before,
+                .heart-${Date.now()}::after {
+                    background-color: hsl(${hue}, 90%, 60%);
+                }
+            `;
+            heart.classList.add(`heart-${Date.now()}`);
+            document.head.appendChild(style);
+            
+            document.body.appendChild(heart);
+            
+            // 动画结束后移除元素
+            setTimeout(() => {
+                heart.remove();
+                style.remove();
+            }, (duration + delay) * 1000);
+        }
+        
+        // 定时创建心形
+        setInterval(createHearts, 800);
+        
+        // 烟花效果
+        function createFireworks(x, y) {
+            const colors = ['#f43f5e', '#fb7185', '#fda4af', '#ec4899', '#8b5cf6'];
+            const particleCount = 50;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const firework = document.createElement('div');
+                firework.classList.add('firework');
+                
+                // 随机属性
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                const angle = (i / particleCount) * Math.PI * 2;
+                const distance = Math.random() * 100 + 50;
+                
+                firework.style.left = `${x}px`;
+                firework.style.top = `${y}px`;
+                firework.style.backgroundColor = color;
+                firework.style.transform = `rotate(${angle}rad) translateX(${distance}px) scale(0)`;
+                
+                document.body.appendChild(firework);
+                
+                // 动画结束后移除
+                setTimeout(() => {
+                    firework.remove();
+                }, 1000);
+            }
+        }
+        
+        // 按钮交互
+        const acceptBtn = document.getElementById('acceptBtn');
+        const rejectBtn = document.getElementById('rejectBtn');
+        const successModal = document.getElementById('successModal');
+        const closeModal = document.getElementById('closeModal');
+        
+        // 接受按钮
+        acceptBtn.addEventListener('click', (e) => {
+            // 创建烟花效果
+            const rect = acceptBtn.getBoundingClientRect();
+            const x = rect.left + rect.width / 2;
+            const y = rect.top + rect.height / 2;
+            
+            // 多组烟花
+            for (let i = 0; i < 5; i++) {
+                setTimeout(() => {
+                    createFireworks(
+                        x + (Math.random() * 200 - 100),
+                        y + (Math.random() * 100 - 50)
+                    );
+                }, i * 300);
+            }
+            
+            // 显示模态框
+            setTimeout(() => {
+                successModal.style.opacity = '1';
+                successModal.style.pointerEvents = 'auto';
+                successModal.querySelector('div').style.transform = 'scale(1)';
+            }, 1500);
+        });
+        
+        // 拒绝按钮 - 有趣的行为
+        rejectBtn.addEventListener('mouseover', () => {
+            const btnRect = rejectBtn.getBoundingClientRect();
+            const windowWidth = window.innerWidth;
+            const windowHeight = window.innerHeight;
+            
+            // 计算新位置，确保按钮不会超出视口
+            let newX = Math.random() * (windowWidth - btnRect.width);
+            let newY = Math.random() * (windowHeight - btnRect.height);
+            
+            // 应用新位置
+            rejectBtn.style.position = 'fixed';
+            rejectBtn.style.left = `${newX}px`;
+            rejectBtn.style.top = `${newY}px`;
+            rejectBtn.style.zIndex = '100';
+        });
+        
+        // 关闭模态框
+        closeModal.addEventListener('click', () => {
+            successModal.style.opacity = '0';
+            successModal.style.pointerEvents = 'none';
+            successModal.querySelector('div').style.transform = 'scale(0.9)';
+        });
+        
+        // 页面滚动时的视差效果
+        window.addEventListener('scroll', () => {
+            const scrollY = window.scrollY;
+            document.querySelectorAll('.fade-in').forEach((el, index) => {
+                const speed = 0.05 * (index + 1);
+                el.style.transform = `translateY(${scrollY * speed}px)`;
+            });
+        });
+        
+        // 页面加载完成后创建一些心形
+        window.addEventListener('load', () => {
+            for (let i = 0; i < 5; i++) {
+                setTimeout(createHearts, i * 500);
+            }
+        });
+    </script>
 </body>
 </html>
