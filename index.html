@@ -44,12 +44,24 @@
             .backdrop-blur-xl {
                 backdrop-filter: blur(24px);
             }
+            .animate-shake {
+                animation: shake 0.5s ease-in-out;
+            }
+            .animate-pulse-fast {
+                animation: pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+            }
         }
 
         @keyframes float {
             0% { transform: translateY(0px); }
             50% { transform: translateY(-20px); }
             100% { transform: translateY(0px); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px) rotate(-2deg); }
+            75% { transform: translateX(5px) rotate(2deg); }
         }
     </style>
 
@@ -132,8 +144,9 @@
 
     <!-- 互动按钮区域 -->
     <section class="max-w-md mx-auto flex justify-center gap-6 mb-16">
-        <button id="noBtn" class="px-8 py-4 bg-gray-700 hover:bg-gray-600 rounded-full text-lg font-medium transition-all duration-300 transform hover:scale-105 hover:shadow-lg">
-            再考虑一下
+        <button id="noBtn" class="px-8 py-4 bg-gray-700 hover:bg-gray-600 rounded-full text-lg font-medium transition-all duration-300 transform hover:scale-105 hover:shadow-lg relative">
+            <span id="noBtnText">再考虑一下</span>
+            <span id="noBtnEmoji" class="ml-2">😐</span>
         </button>
         <button id="yesBtn" class="px-8 py-4 bg-gradient-to-r from-love-pink to-love-purple hover:opacity-90 rounded-full text-lg font-medium transition-all duration-300 transform hover:scale-105 hover:shadow-lg">
             我愿意
@@ -265,25 +278,143 @@
         }, 5000);
     });
 
-    // 互动按钮功能
+    // 互动按钮功能 - 优化版"再考虑一下"按钮
     const noBtn = document.getElementById('noBtn');
+    const noBtnText = document.getElementById('noBtnText');
+    const noBtnEmoji = document.getElementById('noBtnEmoji');
     const yesBtn = document.getElementById('yesBtn');
     const successModal = document.getElementById('successModal');
     const modalContent = document.getElementById('modalContent');
     const closeModal = document.getElementById('closeModal');
     const heartsContainer = document.getElementById('heartsContainer');
 
-    // 让"再考虑一下"按钮逃跑
-    noBtn.addEventListener('mouseover', () => {
+    // 按钮状态和配置
+    let attemptCount = 0;
+    const btnMessages = [
+        "别碰我！",
+        "抓不到我～",
+        "嘿嘿😜",
+        "认真点嘛",
+        "选另一个啦",
+        "你很执着哦",
+        "放弃吧哈哈哈",
+        "我要跑啦！",
+        "真的要选这个吗？",
+        "好吧你赢了...才怪！"
+    ];
+
+    const btnEmojis = ["😮", "😜", "😝", "😏", "😎", "😂", "😈", "🏃‍♂️", "🤔", "😼"];
+
+    // 智能躲避算法
+    function moveAwayFromMouse(mouseX, mouseY) {
+        const btnRect = noBtn.getBoundingClientRect();
+        const btnX = btnRect.left + btnRect.width / 2;
+        const btnY = btnRect.top + btnRect.height / 2;
+
+        // 计算鼠标与按钮的距离
+        const dx = mouseX - btnX;
+        const dy = mouseY - btnY;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+
+        // 距离越近，移动幅度越大
+        const moveDistance = Math.max(50, 200 - distance / 2);
+
+        // 计算移动方向（远离鼠标）
+        let angle;
+        if (distance > 0) {
+            angle = Math.atan2(dy, dx) + Math.PI; // 相反方向
+        } else {
+            // 如果鼠标正好在按钮中心，随机方向
+            angle = Math.random() * Math.PI * 2;
+        }
+
+        // 计算新位置
+        let newX = btnX - btnRect.width / 2 + Math.cos(angle) * moveDistance;
+        let newY = btnY - btnRect.height / 2 + Math.sin(angle) * moveDistance;
+
+        // 边界检查
+        const maxX = window.innerWidth - btnRect.width - 20;
+        const maxY = window.innerHeight - btnRect.height - 20;
+
+        newX = Math.max(20, Math.min(newX, maxX));
+        newY = Math.max(20, Math.min(newY, maxY));
+
+        // 应用新位置并添加动画
+        noBtn.style.position = 'fixed';
+        noBtn.style.left = `${newX}px`;
+        noBtn.style.top = `${newY}px`;
+        noBtn.style.transition = 'transform 0.3s ease-out';
+        noBtn.style.transform = 'scale(1.1)';
+
+        // 恢复缩放
+        setTimeout(() => {
+            noBtn.style.transform = 'scale(1)';
+        }, 300);
+    }
+
+    // 鼠标移动时检测是否需要躲避
+    document.addEventListener('mousemove', (e) => {
+        const btnRect = noBtn.getBoundingClientRect();
+        const mouseX = e.clientX;
+        const mouseY = e.clientY;
+
+        // 检查鼠标是否在按钮附近（检测范围随尝试次数增加而扩大）
+        const detectionRange = 150 + attemptCount * 20;
+
+        const isNear = (
+            mouseX > btnRect.left - detectionRange &&
+            mouseX < btnRect.right + detectionRange &&
+            mouseY > btnRect.top - detectionRange &&
+            mouseY < btnRect.bottom + detectionRange
+        );
+
+        if (isNear) {
+            // 改变表情表示警觉
+            noBtnEmoji.textContent = "😱";
+            // 移动按钮
+            moveAwayFromMouse(mouseX, mouseY);
+        } else {
+            // 恢复正常表情
+            const emojiIndex = Math.min(attemptCount, btnEmojis.length - 1);
+            noBtnEmoji.textContent = btnEmojis[emojiIndex];
+        }
+    });
+
+    // 点击"再考虑一下"按钮时
+    noBtn.addEventListener('click', () => {
+        attemptCount++;
+
+        // 改变按钮文字和表情
+        const msgIndex = Math.min(attemptCount, btnMessages.length - 1);
+        noBtnText.textContent = btnMessages[msgIndex];
+        noBtnEmoji.textContent = btnEmojis[msgIndex];
+
+        // 添加抖动动画
+        noBtn.classList.add('animate-shake');
+        setTimeout(() => {
+            noBtn.classList.remove('animate-shake');
+        }, 500);
+
+        // 快速移动到新位置
         const maxX = window.innerWidth - noBtn.offsetWidth - 20;
         const maxY = window.innerHeight - noBtn.offsetHeight - 20;
-
         const randomX = Math.floor(Math.random() * maxX);
         const randomY = Math.floor(Math.random() * maxY);
 
-        noBtn.style.position = 'fixed';
         noBtn.style.left = `${randomX}px`;
         noBtn.style.top = `${randomY}px`;
+
+        // 多次尝试后添加脉冲效果
+        if (attemptCount > 5) {
+            noBtn.classList.add('animate-pulse-fast');
+        }
+
+        // 很多次尝试后，偶尔会靠近"我愿意"按钮
+        if (attemptCount > 8 && Math.random() > 0.7) {
+            const yesRect = yesBtn.getBoundingClientRect();
+            noBtn.style.left = `${yesRect.left + 120}px`;
+            noBtn.style.top = `${yesRect.top}px`;
+        }
     });
 
     // 点击"我愿意"按钮
@@ -297,6 +428,12 @@
 
         // 创建爱心动画
         createHearts(50);
+
+        // 让"再考虑一下"按钮消失
+        noBtn.style.opacity = '0';
+        setTimeout(() => {
+            noBtn.style.display = 'none';
+        }, 300);
     });
 
     // 关闭弹窗
