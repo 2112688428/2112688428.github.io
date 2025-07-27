@@ -114,6 +114,44 @@
 </head>
 
 <body class="font-main overflow-x-hidden bg-love-dark text-white min-h-screen">
+<!-- 背景音乐 -->
+<audio id="backgroundMusic" loop>
+    <source id="audioSource" src="" type="audio/mpeg">
+    您的浏览器不支持音频播放
+</audio>
+
+<!-- 音乐控制区域 -->
+<div class="fixed top-4 right-4 z-50 flex flex-col items-end gap-2">
+    <!-- 音乐信息显示 -->
+    <div id="musicInfo" class="bg-black/30 backdrop-blur-xl px-4 py-2 rounded-full text-sm opacity-0 transition-opacity duration-300 max-w-[200px] truncate">
+        正在播放: <span id="currentSongTitle">爱情歌曲</span>
+    </div>
+
+    <!-- 音乐控制按钮组 -->
+    <div class="bg-black/30 backdrop-blur-xl p-2 rounded-full flex items-center gap-1">
+        <button id="prevSong" class="p-2 rounded-full hover:bg-black/30 transition-all duration-300">
+            <i class="fa fa-step-backward text-sm"></i>
+        </button>
+        <button id="musicControl" class="p-2 rounded-full hover:bg-black/30 transition-all duration-300">
+            <i class="fa fa-play text-sm"></i>
+        </button>
+        <button id="nextSong" class="p-2 rounded-full hover:bg-black/30 transition-all duration-300">
+            <i class="fa fa-step-forward text-sm"></i>
+        </button>
+    </div>
+
+    <!-- 音乐音量控制 -->
+    <div id="volumeControl" class="bg-black/30 backdrop-blur-xl p-2 rounded-full hidden">
+        <input type="range" id="volumeSlider" min="0" max="100" value="30"
+               class="w-24 accent-love-pink cursor-pointer">
+    </div>
+</div>
+
+<!-- 首次点击提示 -->
+<div id="clickPrompt" class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-40 bg-black/50 backdrop-blur-xl px-8 py-6 rounded-3xl text-center">
+    <p class="text-xl mb-4">点击任意位置开始播放音乐</p>
+    <i class="fa fa-music text-4xl text-love-pink animate-pulse"></i>
+</div>
 <!-- 代码雨背景 -->
 <canvas id="matrix" class="fixed inset-0 z-0 opacity-60"></canvas>
 
@@ -187,6 +225,28 @@
             <div class="min-w-full h-full">
                 <img src="img/18.jpg" alt="与廖芳琴相关的美好回忆" class="w-full h-full object-cover">
             </div>
+            <div class="min-w-full h-full">
+                <img src="img/19.jpg" alt="与廖芳琴相关的美好回忆" class="w-full h-full object-cover">
+            </div>
+            <div class="min-w-full h-full">
+                <img src="img/20.jpg" alt="与廖芳琴相关的美好回忆" class="w-full h-full object-cover">
+            </div>
+            <div class="min-w-full h-full">
+                <img src="img/21.jpg" alt="与廖芳琴相关的美好回忆" class="w-full h-full object-cover">
+            </div>
+            <div class="min-w-full h-full">
+                <img src="img/22.jpg" alt="与廖芳琴相关的美好回忆" class="w-full h-full object-cover">
+            </div>
+            <div class="min-w-full h-full">
+                <img src="img/23.jpg" alt="与廖芳琴相关的美好回忆" class="w-full h-full object-cover">
+            </div>
+            <div class="min-w-full h-full">
+                <img src="img/24.jpg" alt="与廖芳琴相关的美好回忆" class="w-full h-full object-cover">
+            </div>
+            <div class="min-w-full h-full">
+            <img src="img/25.jpg" alt="与廖芳琴相关的美好回忆" class="w-full h-full object-cover">
+            </div>
+
         </div>
 
         <!-- 轮播控制按钮 -->
@@ -200,6 +260,13 @@
         <!-- 轮播指示器 -->
         <div class="absolute bottom-4 left-0 right-0 flex justify-center gap-2">
             <span class="carousel-indicator w-3 h-3 rounded-full bg-white/50 cursor-pointer transition-all duration-300 active"></span>
+            <span class="carousel-indicator w-3 h-3 rounded-full bg-white/50 cursor-pointer transition-all duration-300"></span>
+            <span class="carousel-indicator w-3 h-3 rounded-full bg-white/50 cursor-pointer transition-all duration-300"></span>
+            <span class="carousel-indicator w-3 h-3 rounded-full bg-white/50 cursor-pointer transition-all duration-300"></span>
+            <span class="carousel-indicator w-3 h-3 rounded-full bg-white/50 cursor-pointer transition-all duration-300"></span>
+            <span class="carousel-indicator w-3 h-3 rounded-full bg-white/50 cursor-pointer transition-all duration-300"></span>
+            <span class="carousel-indicator w-3 h-3 rounded-full bg-white/50 cursor-pointer transition-all duration-300"></span>
+            <span class="carousel-indicator w-3 h-3 rounded-full bg-white/50 cursor-pointer transition-all duration-300"></span>
             <span class="carousel-indicator w-3 h-3 rounded-full bg-white/50 cursor-pointer transition-all duration-300"></span>
             <span class="carousel-indicator w-3 h-3 rounded-full bg-white/50 cursor-pointer transition-all duration-300"></span>
             <span class="carousel-indicator w-3 h-3 rounded-full bg-white/50 cursor-pointer transition-all duration-300"></span>
@@ -289,6 +356,191 @@
     // 检测是否为移动设备
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
+    // 【需要修改】音乐播放列表 - 替换为实际的音乐URL和标题
+    const musicPlaylist = [
+        {
+            url: "music/1.ogg",
+            title: "浪漫旋律一"
+        },
+        {
+            url: "music/2.ogg",
+            title: "爱情故事"
+        },
+        {
+            url: "music/3.ogg",
+            title: "心动瞬间"
+        },
+        {
+            url: "music/3.ogg",
+            title: "永恒承诺"
+        }
+    ];
+
+    let currentSongIndex = 0; // 当前播放歌曲索引
+
+    // 背景音乐控制元素
+    const backgroundMusic = document.getElementById('backgroundMusic');
+    const audioSource = document.getElementById('audioSource');
+    const musicControl = document.getElementById('musicControl');
+    const prevSongBtn = document.getElementById('prevSong');
+    const nextSongBtn = document.getElementById('nextSong');
+    const volumeControl = document.getElementById('volumeControl');
+    const volumeSlider = document.getElementById('volumeSlider');
+    const clickPrompt = document.getElementById('clickPrompt');
+    const musicInfo = document.getElementById('musicInfo');
+    const currentSongTitle = document.getElementById('currentSongTitle');
+
+    let isMusicPlaying = false;
+    let isUserInteracted = false;
+    let volumeTimeout;
+
+    // 初始化音乐播放列表
+    function initMusicPlayer() {
+        // 设置初始歌曲
+        loadSong(currentSongIndex);
+
+        // 设置音量
+        backgroundMusic.volume = volumeSlider.value / 100;
+
+        // 监听歌曲结束事件，自动播放下一首
+        backgroundMusic.addEventListener('ended', playNextSong);
+
+        // 显示当前歌曲信息
+        showMusicInfo();
+    }
+
+    // 加载指定歌曲
+    function loadSong(index) {
+        if (musicPlaylist.length === 0) return;
+
+        // 确保索引在有效范围内
+        index = ((index % musicPlaylist.length) + musicPlaylist.length) % musicPlaylist.length;
+        currentSongIndex = index;
+
+        // 更新音频源
+        audioSource.src = musicPlaylist[currentSongIndex].url;
+        backgroundMusic.load();
+
+        // 更新歌曲标题
+        currentSongTitle.textContent = musicPlaylist[currentSongIndex].title;
+
+        // 如果正在播放状态，加载后继续播放
+        if (isMusicPlaying) {
+            backgroundMusic.play().catch(err => {
+                console.log("播放失败:", err);
+            });
+        }
+    }
+
+    // 播放/暂停音乐
+    function toggleMusic() {
+        if (isMusicPlaying) {
+            backgroundMusic.pause();
+        } else {
+            backgroundMusic.play().catch(err => {
+                console.log("播放失败:", err);
+                // 如果需要用户交互，显示提示
+                if (!isUserInteracted) {
+                    clickPrompt.classList.remove('hidden');
+                }
+            });
+        }
+        isMusicPlaying = !isMusicPlaying;
+        updateMusicIcon();
+    }
+
+    // 播放上一首
+    function playPrevSong() {
+        handleFirstInteraction();
+        loadSong(currentSongIndex - 1);
+    }
+
+    // 播放下一首
+    function playNextSong() {
+        loadSong(currentSongIndex + 1);
+    }
+
+    // 更新音乐控制按钮图标
+    function updateMusicIcon() {
+        const icon = musicControl.querySelector('i');
+        icon.className = ''; // 清除所有类
+
+        if (isMusicPlaying) {
+            icon.classList.add('fa', 'fa-pause', 'text-sm');
+        } else {
+            icon.classList.add('fa', 'fa-play', 'text-sm');
+        }
+    }
+
+    // 调整音量
+    function adjustVolume() {
+        backgroundMusic.volume = volumeSlider.value / 100;
+
+        // 如果静音状态下调整音量，自动播放
+        if (volumeSlider.value > 0 && !isMusicPlaying) {
+            isMusicPlaying = true;
+            backgroundMusic.play();
+        }
+
+        updateMusicIcon();
+        showVolumeControl();
+    }
+
+    // 显示音量控制
+    function showVolumeControl() {
+        volumeControl.classList.remove('hidden');
+
+        // 清除之前的超时
+        clearTimeout(volumeTimeout);
+
+        // 3秒后隐藏音量控制
+        volumeTimeout = setTimeout(() => {
+            volumeControl.classList.add('hidden');
+        }, 3000);
+    }
+
+    // 显示音乐信息
+    function showMusicInfo() {
+        musicInfo.classList.remove('opacity-0');
+        musicInfo.classList.add('opacity-100');
+
+        // 5秒后淡出
+        setTimeout(() => {
+            musicInfo.classList.remove('opacity-100');
+            musicInfo.classList.add('opacity-0');
+        }, 5000);
+    }
+
+    // 处理用户首次交互 - 取消静音并开始播放
+    function handleFirstInteraction() {
+        if (!isUserInteracted) {
+            isUserInteracted = true;
+            clickPrompt.classList.add('hidden');
+
+            // 开始播放音乐
+            if (!isMusicPlaying) {
+                isMusicPlaying = true;
+                backgroundMusic.play();
+                updateMusicIcon();
+            }
+        }
+    }
+
+    // 音乐控制事件监听
+    musicControl.addEventListener('click', toggleMusic);
+    prevSongBtn.addEventListener('click', playPrevSong);
+    nextSongBtn.addEventListener('click', playNextSong);
+    volumeSlider.addEventListener('input', adjustVolume);
+
+    // 鼠标悬停在音乐控制上时显示音量控制和音乐信息
+    document.querySelector('#musicControl').parentElement.addEventListener('mouseenter', () => {
+        showVolumeControl();
+        showMusicInfo();
+    });
+
+    // 监听整个页面的点击事件，用于首次交互
+    document.addEventListener('click', handleFirstInteraction);
+    document.addEventListener('touchend', handleFirstInteraction);
     // 代码雨效果
     const canvas = document.getElementById('matrix');
     const ctx = canvas.getContext('2d');
@@ -300,6 +552,11 @@
     }
 
     window.addEventListener('resize', resizeCanvas);
+    // 【修改】初始化函数 - 改为初始化音乐播放器
+    window.addEventListener('load', () => {
+        animate();
+        initMusicPlayer(); // 替换了原有的initMusic()
+    });
     resizeCanvas();
 
     // 代码雨字符
